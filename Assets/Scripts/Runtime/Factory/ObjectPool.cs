@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Assets.Scripts.Runtime.Factory
+namespace Factory
 {
     public class ObjectPool
     {
-        private int _maxCount;
-        private List<GameObject> _objects;
-        private Transform _parent;
-        private GameObject _prefab;
-        private Container _container;
+        private readonly int _maxCount;
+        private readonly Transform _parent;
+        private readonly GameObject _prefab;
+        private readonly Container _container;
+
+        private readonly List<GameObject> _objects;
+        private readonly Queue<GameObject> _inactiveObjects = new();
 
         public ObjectPool(GameObject prefab, Container container, int maxCount = -1, Transform parent = null)
         {
@@ -36,40 +38,44 @@ namespace Assets.Scripts.Runtime.Factory
             }
         }
 
+        private GameObject CreateNewInstance()
+        {
+            var obj = _container.Instantiate(_prefab, _parent);
+            obj.SetActive(false);
+            _objects.Add(obj);
+            _inactiveObjects.Enqueue(obj);
+            return obj;
+        }
+
         public GameObject Get(Vector2 position)
         {
-            foreach (var obj in _objects)
+            GameObject obj = null;
+
+            if (_inactiveObjects.Count > 0)
             {
-                if (!obj.activeInHierarchy)
-                {
-                    obj.transform.position = position;
-                    obj.SetActive(true);
-                    return obj;
-                }
+                obj = _inactiveObjects.Dequeue();
+            }
+            else if (_maxCount < 0 || _objects.Count < _maxCount)
+            {
+                CreateNewInstance();
+                obj = _inactiveObjects.Dequeue();
             }
 
-            if (_maxCount < 0 || _objects.Count < _maxCount)
+            if (obj != null)
             {
-                var obj = _container.Instantiate(_prefab, position, Quaternion.identity, _parent);
-                _objects.Add(obj);
-                return obj;
+                obj.transform.position = position;
+                obj.SetActive(true);
             }
 
-            return null;
+            return obj;
         }
 
-        public void Add(GameObject obj)
+        public void ReturnToPool(GameObject obj)
         {
             obj.SetActive(false);
-            obj.transform.SetParent(_parent);
-            if (!_objects.Contains(obj))
-                _objects.Add(obj);
-        }
-
-        public void Remove(GameObject obj)
-        {
-            _objects.Remove(obj);
-            Object.Destroy(obj);
+        
+            if (!_inactiveObjects.Contains(obj))
+                _inactiveObjects.Enqueue(obj);
         }
     }
 }

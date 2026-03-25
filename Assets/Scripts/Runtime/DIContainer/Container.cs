@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Unity.Mathematics;
 using UnityEngine;
@@ -112,7 +111,7 @@ namespace DIContainer
          
         public void Inject(MonoBehaviour mono)
         {
-            InjectConstructors(mono.GetType());
+            //InjectConstructors(mono.GetType());
             InjectFields(mono);
             InjectProperties(mono);
             InjectMethods(mono);
@@ -142,17 +141,17 @@ namespace DIContainer
             }
         }
 
-        private object InjectConstructors(Type type)
-        {
-            var constructors = type.GetConstructors();
+        //private object InjectConstructors(Type type)
+        //{
+        //    var constructors = type.GetConstructors();
 
-            var ctor = constructors
-                           .FirstOrDefault(c => Attribute.IsDefined(c, typeof(InjectAttribute))) ?? constructors[0];
+        //    var ctor = constructors
+        //                   .FirstOrDefault(c => Attribute.IsDefined(c, typeof(InjectAttribute))) ?? constructors[0];
 
-            var args = ResolveParameters(ctor.GetParameters());
+        //    var args = ResolveParameters(ctor.GetParameters());
 
-            return Activator.CreateInstance(type, args);
-        }
+        //    return Activator.CreateInstance(type, args);
+        //}
 
         private void InjectMethods(MonoBehaviour mono)
         {

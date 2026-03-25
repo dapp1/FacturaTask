@@ -1,9 +1,11 @@
-﻿using UnityEngine;
+﻿using Enemy;
+using UnityEngine;
 
 namespace Factory
 {
     public interface IEnemyFactory
     {
-        GameObject CreateEntity();
+        void InitializeFactory(EnemyType type, int initialCount);
+        GameObject CreateEntity(EnemyType type, Vector3 pos);
     }
 }

@@ -1,48 +1,48 @@
-﻿using System.Collections.Generic;
-using DIContainer;
+﻿using DIContainer;
+using Enemy;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace Factory
 { 
     public class EnemyFactory : IEnemyFactory
     {
         // private EntitiesFactoryConfig _config;
-        //private Dictionary<EntityType, ObjectPool> _pools = new Dictionary<EntityType, LocalEntityPool>();
+        private Dictionary<EnemyType, ObjectPool> _pools = new Dictionary<EnemyType, ObjectPool>();
         private Container _container;
-        
-        [Inject]
-        public GameObject CreateEntity()
+
+        public EnemyFactory(Container container)
         {
-            throw new System.NotImplementedException();
+            _container = container;
         }
 
-        //public EntityFactory(EntitiesFactoryConfig config, Container container)
-        //{
-        //    _config = config;
-        //    _container = container;
-        //}
+        public GameObject CreateEntity(EnemyType type, Vector3 pos)
+        {
+            var pool = TryGetPool(type);
+            return pool.Get(pos);
+        }
 
-        //public void InitializeFactory(EntityType type, int maxCount = -1)
-        //{
-        //    if (!_pools.TryGetValue(type, out var pool))
-        //    {
-        //        var prefab = _config.GetPrefabByType(type);
-        //        pool = new LocalEntityPool(prefab, _container, maxCount);
-        //        _pools[type] = pool;
-        //    }
-        //}
+        public void InitializeFactory(EnemyType type, int initialCount)
+        {
+            TryGetPool(type, initialCount);
+        }
 
-        public GameObject CreateEntity(EntityType type, Vector2 position, int maxCount = -1)
+        ObjectPool TryGetPool(EnemyType type, int size = -1)
         {
             if (!_pools.TryGetValue(type, out var pool))
             {
-                var prefab = _config.GetPrefabByType(type);
-                pool = new LocalEntityPool(prefab, _container, maxCount, null);
+                //GameObject prefab = _config.GetPrefab(type);
+                GameObject prefab = null;
+
+                if (prefab == null)
+                    throw new Exception($"Prefab for {type} not found in config!");
+
+                pool = new ObjectPool(prefab, _container, size, null);
                 _pools[type] = pool;
             }
+            return pool;
 
-            return pool.Get(position);
         }
     }
 }
