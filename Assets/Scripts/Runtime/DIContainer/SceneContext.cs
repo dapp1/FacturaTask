@@ -1,0 +1,31 @@
+﻿using Factory;
+using UnityEngine;
+
+namespace DIContainer
+{
+    [DefaultExecutionOrder(-999)]
+    public class SceneContext : Context
+    {
+        [SerializeField] private MonoBehaviour[] _objects;
+        
+        private GameContext _gameContext;
+        
+        protected override void Awake()
+        {
+            _gameContext = GameContext.Instance;
+            Container = new Container(_gameContext.Container);
+            InstallBindings();
+        }
+        
+        protected override void InstallBindings()
+        {
+            Container.BindInstance(Container);
+            Container.Bind<IEnemyFactory, Factory.EnemyFactory>();
+            
+            foreach (var monoBehaviour in _objects)
+            {
+                Container.Inject(monoBehaviour);
+            }
+        }
+    }
+}
