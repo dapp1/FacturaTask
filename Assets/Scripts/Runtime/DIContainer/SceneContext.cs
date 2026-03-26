@@ -20,7 +20,7 @@ namespace DIContainer
         protected override void InstallBindings()
         {
             Container.BindInstance(Container);
-            Container.Bind<IEnemyFactory, Factory.EnemyFactory>();
+            Container.Bind<IObjectFactory, ObjectFactory>();
             
             foreach (var monoBehaviour in _objects)
             {

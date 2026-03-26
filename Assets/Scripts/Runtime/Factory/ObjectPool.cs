@@ -32,22 +32,26 @@ namespace Factory
 
             for (int i = 0; i < initialCount; i++)
             {
-                var obj = _container.Instantiate(_prefab, _parent);
-                obj.SetActive(false);
-                _objects.Add(obj);
+                CreateNewInstance();
             }
         }
 
         private GameObject CreateNewInstance()
         {
             var obj = _container.Instantiate(_prefab, _parent);
+
+            var poolable = obj.GetComponent<PoolableObject>();
+            if (poolable == null) poolable = obj.AddComponent<PoolableObject>();
+
+            poolable.Init(this);
+
             obj.SetActive(false);
             _objects.Add(obj);
             _inactiveObjects.Enqueue(obj);
             return obj;
         }
 
-        public GameObject Get(Vector2 position)
+        public GameObject Get(Vector3 position)
         {
             GameObject obj = null;
 
@@ -55,6 +59,7 @@ namespace Factory
             {
                 obj = _inactiveObjects.Dequeue();
             }
+
             else if (_maxCount < 0 || _objects.Count < _maxCount)
             {
                 CreateNewInstance();
@@ -73,9 +78,7 @@ namespace Factory
         public void ReturnToPool(GameObject obj)
         {
             obj.SetActive(false);
-        
-            if (!_inactiveObjects.Contains(obj))
-                _inactiveObjects.Enqueue(obj);
+            _inactiveObjects.Enqueue(obj);
         }
     }
 }

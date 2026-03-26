@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Factory
 { 
-    public class EnemyFactory : IEnemyFactory
+    public class EnemyFactory
     {
         // private EntitiesFactoryConfig _config;
         private Dictionary<EnemyType, ObjectPool> _pools = new Dictionary<EnemyType, ObjectPool>();
