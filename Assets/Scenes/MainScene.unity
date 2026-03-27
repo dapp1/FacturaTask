@@ -694,7 +694,7 @@ MonoBehaviour:
   _lostScreen: {fileID: 247784883}
   _tutorScreen: {fileID: 1137899167}
   _wayBar: {fileID: 693743010}
-  _fillDuration: 60
+  _fillDuration: 30
 --- !u!4 &521336241
 Transform:
   m_ObjectHideFlags: 0

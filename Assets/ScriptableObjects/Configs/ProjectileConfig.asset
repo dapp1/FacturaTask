@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3a55a18ae8a6ba44a7cede5f385f1d1, type: 3}
   m_Name: ProjectileConfig
   m_EditorClassIdentifier: Assembly-CSharp::Configs.ProjectileConfig
-  <Speed>k__BackingField: 60
+  <Speed>k__BackingField: 100
   <Damage>k__BackingField: 51
   <TimeToDisable>k__BackingField: 2
